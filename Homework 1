@@ -1,10 +1,1 @@
-install.packages("data.table")
-install.packages("skimr")
-install.packages("ggcorrplot")
-install.packages("GGally")
-library(data.table)
-First I install the required packages.
-data_path='C:/Users/ozanridvan.aksu/Documents/all_ticks_wide.csv'
-data=fread(data_path)
-
 
