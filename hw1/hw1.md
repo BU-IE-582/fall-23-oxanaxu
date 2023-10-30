@@ -218,6 +218,7 @@ print(normalized_variances)
        VAKBN        VESTL        YATAS        YKBNK        YUNSA        ZOREN 
 0.0166376319 0.0378954171 0.0571713388 0.0114094318 0.0199893825 0.0162416746
 ```
+Maximum variance belongs to SASA with 0.08753646 and minimum variance belongs to GOODY with 0.0002276099. This information gives us an insight about the risk of these stocks.
 ### Moving Window Correlation
 The the maximum and minimum correlation values between the stock values are given below:
 
