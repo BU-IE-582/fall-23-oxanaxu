@@ -1,8 +1,8 @@
-install.packages("data.table")
+`install.packages("data.table")
 install.packages("skimr")
 install.packages("ggcorrplot")
 install.packages("GGally")
-library(data.table)
+library(data.table)`
 
 After installing the required packages, we can take a look at the summary statistics of the data.
 
