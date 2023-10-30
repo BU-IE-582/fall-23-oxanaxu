@@ -4,8 +4,7 @@ install.packages("ggcorrplot")
 install.packages("GGally")
 library(data.table)
 First I install the required packages.
-data_path='C:/Users/ozanridvan.aksu/Documents/all_ticks_wide2.csv'
-feat_names_path='C:/Users/ozanridvan.aksu/Documents/all_ticks_wide.txt'
+data_path='C:/Users/ozanridvan.aksu/Documents/all_ticks_wide.csv'
 data=fread(data_path)
-feat_names=fread(feat_names_path,header=F)
-names(data)=feat_names$V1
+
+
