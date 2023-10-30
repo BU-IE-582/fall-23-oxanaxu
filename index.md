@@ -1,5 +1,4 @@
- [html](hw1/homework1.html)
- [html3](hw1/hw1.md)
+My code and comments about the first homework is [here](hw1/hw1.md).
 
 ## Welcome to GitHub Pagessss
 
