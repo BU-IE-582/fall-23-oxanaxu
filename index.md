@@ -1,5 +1,5 @@
  [html](hw1/homework1.html)
- [html2](hw1/hw1.Rmd)
+ [html2](hw1/hw1.md)
 
 ## Welcome to GitHub Pagessss
 
