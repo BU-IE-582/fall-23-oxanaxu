@@ -251,4 +251,5 @@ row col
  12  44 
 ```
 The maximum correlation value is 0.9340109 which is the correlation of AKBNK and SAHOL, which makes sense since Akbank is within the Sabancı Holding.
-![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/c23367ec-95fa-4498-bf11-a31b9845c126)
+![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/5c290835-60e3-40e4-8238-f9cfc7fcf18f)
+The correlation values are mostly between 0.5 and 1. There is an unusual low correlation during April of 2014.
