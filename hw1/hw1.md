@@ -1,3 +1,4 @@
+# Descriptive Analysis
 ```
 install.packages("data.table")
 install.packages("skimr")
@@ -188,4 +189,32 @@ print(kurtosis_values)
      YATAS      YKBNK      YUNSA      ZOREN 
   3.086681   3.021049   3.764225   3.273040 
 timestamp_column <- data$timestamp
+```
+In order to be able to compare the variances of the stocks, each column is normalized, and the variance of the normalized data is calculated.
+```
+timestamp_column <- data$timestamp
+numeric_data <- as.data.frame(lapply(data[, -1], function(x) if(is.numeric(x)) (x - min(x, na.rm = TRUE)) / (max(x, na.rm = TRUE) - min(x, na.rm = TRUE)) else x))
+normalized_data <- cbind(timestamp = timestamp_column, numeric_data)
+normalized_variances <- sapply(normalized_data[, -1], var, na.rm = TRUE)
+print(normalized_variances)
+ AEFES        AKBNK         AKSA        AKSEN        ALARK        ALBRK 
+0.0076530162 0.0105217092 0.0321302894 0.0194778442 0.0268600374 0.0207695471 
+       ANACM        ARCLK        ASELS        ASUZU        AYGAZ        BAGFS 
+0.0506783366 0.0294006810 0.0423600576 0.0207497668 0.0368772588 0.0088612515 
+       BANVT        BRISA        CCOLA        CEMAS        ECILC        EREGL 
+0.0477528851 0.0157315955 0.0154852622 0.0130233700 0.0530543396 0.0660347598 
+       FROTO        GARAN        GOODY        GUBRF        HALKB        ICBCT 
+0.0507169887 0.0105690641 0.0002276099 0.0080640598 0.0230384040 0.0252232848 
+       ISCTR        ISDMR        ISFIN        ISYAT        KAREL        KARSN 
+0.0158743436 0.0666769614 0.0322338460 0.0194202340 0.0508698669 0.0134954796 
+       KCHOL        KRDMB        KRDMD        MGROS        OTKAR        PARSN 
+0.0276004074 0.0233078335 0.0360555963 0.0166217557 0.0397052961 0.0244465131 
+       PETKM        PGSUS        PRKME        SAHOL         SASA         SISE 
+0.0570858822 0.0228510252 0.0176778444 0.0066867763 0.0875364565 0.0422416776 
+       SKBNK         SODA        TCELL        THYAO        TKFEN        TOASO 
+0.0171564877 0.0693966662 0.0222048115 0.0407516328 0.0595537046 0.0447294412 
+       TRKCM         TSKB        TTKOM        TUKAS        TUPRS         USAK 
+0.0560926577 0.0119454879 0.0124044830 0.0270714998 0.0540975028 0.0277675757 
+       VAKBN        VESTL        YATAS        YKBNK        YUNSA        ZOREN 
+0.0166376319 0.0378954171 0.0571713388 0.0114094318 0.0199893825 0.0162416746
 ```
