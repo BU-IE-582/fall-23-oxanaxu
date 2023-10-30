@@ -1,2 +1,7 @@
-# Test
-Hello world
+```markdown
+install.packages("data.table")
+install.packages("skimr")
+install.packages("ggcorrplot")
+install.packages("GGally")
+library(data.table)
+```
