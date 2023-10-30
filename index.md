@@ -1,4 +1,4 @@
- [html](https://bu-ie-582.github.io/fall-23-oxanaxu/hw1/homework1.html)
+ [html](hw1/homework1.html)
 
 ## Welcome to GitHub Pagessss
 
