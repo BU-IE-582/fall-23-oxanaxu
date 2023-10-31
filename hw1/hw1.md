@@ -219,6 +219,50 @@ print(normalized_variances)
 0.0166376319 0.0378954171 0.0571713388 0.0114094318 0.0199893825 0.0162416746
 ```
 Maximum variance belongs to SASA with 0.08753646 and minimum variance belongs to GOODY with 0.0002276099. This information gives us an insight about the risk of these stocks.
+
+In order to see the patterns, we need to plot the columns. In order to have a clear understanding, i first sorted the columns with respect to their mean values so that we have similar values in the same plot. I made groups of five, so now we have 12 plots:
+```
+numeric_cols <- names(data)[sapply(data, is.numeric)]
+mean_values <- data[, lapply(.SD, mean, na.rm = TRUE), .SDcols = numeric_cols]
+sorted_column_names <- names(mean_values)[order(mean_values)]
+sorted_data <- data[, c("timestamp", sorted_column_names), with = FALSE]
+
+group_size <- 5
+numeric_cols <- names(data)[sapply(data, is.numeric)]
+numeric_cols <- numeric_cols[2:length(numeric_cols)]
+groups <- split(numeric_cols, (seq_along(numeric_cols) - 1) %/% group_size)
+par(mar = c(5, 4, 4, 2))  # Adjust figure margins
+for (group in groups) {
+    if (length(group) > 0) {
+        # Prepare data for the group
+        group_data <- as.data.frame(data[, c("timestamp", group), with = FALSE])
+        max_value <- max(unlist(group_data[group]), na.rm = TRUE)
+        if (is.finite(max_value)) {
+            # Create a new plot for the group with a common y-axis limit
+            plot(group_data$timestamp, group_data[[group[1]]], type = "l", col = 1, xlab = "Timestamp", ylab = "Price", main = paste(group, collapse = ", "), ylim = c(0, max_value))
+            for (i in 2:length(group)) {
+                lines(group_data$timestamp, group_data[[group[i]]], col = i)
+            }
+            legend_colors <- c(1, 2:length(group))
+            legend("topright", legend = names(group_data)[-1], col = legend_colors, lty = 1, cex = 0.8)
+            par(mfrow = c(1, 1))
+        }
+    }
+}
+```
+![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/86811db0-9912-47af-9541-7f38a44c2151)
+![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/026f6659-ce74-4eba-9240-f713fe668264)
+![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/ff9242e4-1bbc-4b2f-aadf-6718e89b504f)
+![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/8502e552-a8cc-4f25-bfae-2a9f8ba71b76)
+![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/f20cc579-8ae0-40c8-a738-137bd94a8ebc)
+![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/7eef1c6a-c064-409c-a25c-f66f19bab3c5)
+![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/3da242c9-ce49-415f-afd7-849a07142a1d)
+![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/829024ed-b21e-47a4-8256-9aacfef7f69f)
+![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/c5bbf2aa-1e87-4c2a-9dbd-9a79db5f680a)
+![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/04e3fa75-c2ce-49ee-b59c-23259b7d38db)
+![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/702dd3d0-306f-48af-b858-652dba868e8c)
+![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/e0a82c63-c2ed-49c8-8b20-067f096fc0ee)
+Almost every stock price increased at the beginning of 2017 and they decreased during of 2018 with some exceptions like CCOLA. 
 ### Moving Window Correlation
 The the maximum and minimum correlation values between the stock values are given below:
 
@@ -252,4 +296,16 @@ row col
 ```
 The maximum correlation value is 0.9340109 which is the correlation of AKBNK and SAHOL, which makes sense since Akbank is within the Sabancı Holding.
 ![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/5c290835-60e3-40e4-8238-f9cfc7fcf18f)
-The correlation values are mostly between 0.5 and 1. There is an unusual low correlation during April of 2014.
+The correlation values are mostly between 0.5 and 1. There is an unusual low correlation during April of 2014. What seemed really interesting that BAGFS and SODA has a correlation value of -0.8944663, which indicates that these two stock prices behave almost opposite. But when the moving window correlation is observed, this seems not to be case since there is not a regular pattern in the plot below.
+```
+correlation_values2 <- c()
+for (start_row in seq(2, nrow(data), by = 500)) {
+  end_row <- min(start_row + 499, nrow(data))
+  data_subset <- data[start_row:end_row, c(45, 13)]
+  correlation_value <- cor(data_subset[, 1], data_subset[, 2], use = "complete.obs")
+  correlation_values2 <- c(correlation_values2, correlation_value)
+}
+print(correlation_values2)
+plot(correlation_values2, type = "l", xlab = "Time", ylab = "Correlation Value", main = "Monthly Correlation Values of BAGFS and SODA")
+```
+![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/d6acab76-3e34-4d87-918e-a24f3fad8b42)
