@@ -273,26 +273,20 @@ row_index <- which(correlation_matrix == max_value, arr.ind = TRUE)[1,]
 col_index <- which(correlation_matrix == max_value, arr.ind = TRUE)[2,]
 print(max_value)
 print(row_index)
-print(col_index)
 
 [1] 0.9340109
 row col 
  40   2 
-row col 
-  2  40
 
 min_value <- min(correlation_matrix[correlation_matrix != 1], na.rm = TRUE)
 row_index2 <- which(correlation_matrix == min_value, arr.ind = TRUE)[1,]
 col_index2 <- which(correlation_matrix == min_value, arr.ind = TRUE)[2,]
 print(min_value)
 print(row_index2)
-print(col_index2)
 
 [1] -0.8944663
 row col 
  44  12 
-row col 
- 12  44 
 ```
 The maximum correlation value is 0.9340109 which is the correlation of AKBNK and SAHOL, which makes sense since Akbank is within the Sabancı Holding.
 ![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/5c290835-60e3-40e4-8238-f9cfc7fcf18f)
