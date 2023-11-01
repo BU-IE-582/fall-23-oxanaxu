@@ -259,10 +259,19 @@ for (group in groups) {
 ![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/e0a82c63-c2ed-49c8-8b20-067f096fc0ee)
 Almost every stock price increased at the beginning of 2017 and they decreased during of 2018 with some exceptions like CCOLA. This can be related to some economic or political changes in the country.
 ### Moving Window Correlation
+When the correlation matrix is observed, I noticed that 70% of the values are positive. This shows us the size of the two groups, when the data is divided into two groups, in which the stock prices tend to behave in similar direction.
+```
+correlation_matrix <- cor(data[, -1], use = "complete.obs")
+positive_values <- sum(correlation_matrix > 0 & correlation_matrix != 1)
+total_values <- sum(correlation_matrix !=1)
+ratio <- positive_values/total_values
+ratio
+
+0.705649717514124
+```
 The the maximum and minimum correlation values between the stock values are given below:
 
 ```
-correlation_matrix <- cor(data[, -1], use = "complete.obs")
 max_value <- max(correlation_matrix[correlation_matrix != 1], na.rm = TRUE)
 row_index <- which(correlation_matrix == max_value, arr.ind = TRUE)[1,]
 col_index <- which(correlation_matrix == max_value, arr.ind = TRUE)[2,]
@@ -457,4 +466,4 @@ YUNSA                0.314        -0.130        -0.168 -0.145  0.105 -0.178
 ZOREN  0.126  0.123               -0.292                              0.288 ...
 ```
 
-The first 6 components cover over 90% of the variance.
+The first 6 components cover over 90% of the variance. During this part of the homework, I realized my knowledge about PCA is not enough to interpret.
