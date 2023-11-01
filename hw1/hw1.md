@@ -274,7 +274,6 @@ The the maximum and minimum correlation values between the stock values are give
 ```
 max_value <- max(correlation_matrix[correlation_matrix != 1], na.rm = TRUE)
 row_index <- which(correlation_matrix == max_value, arr.ind = TRUE)[1,]
-col_index <- which(correlation_matrix == max_value, arr.ind = TRUE)[2,]
 print(max_value)
 print(row_index)
 
@@ -284,7 +283,6 @@ row col
 
 min_value <- min(correlation_matrix[correlation_matrix != 1], na.rm = TRUE)
 row_index2 <- which(correlation_matrix == min_value, arr.ind = TRUE)[1,]
-col_index2 <- which(correlation_matrix == min_value, arr.ind = TRUE)[2,]
 print(min_value)
 print(row_index2)
 
