@@ -220,13 +220,8 @@ print(normalized_variances)
 ```
 Maximum variance belongs to SASA with 0.08753646 and minimum variance belongs to GOODY with 0.0002276099. This information gives us an insight about the risk of these stocks.
 
-In order to see the patterns, we need to plot the columns. In order to have a clear understanding, i first sorted the columns with respect to their mean values so that we have similar values in the same plot. I made groups of five, so now we have 12 plots:
+In order to see the patterns, we need to plot the columns. In order to have clear plots I made groups of five, so now we have 12 plots:
 ```
-numeric_cols <- names(data)[sapply(data, is.numeric)]
-mean_values <- data[, lapply(.SD, mean, na.rm = TRUE), .SDcols = numeric_cols]
-sorted_column_names <- names(mean_values)[order(mean_values)]
-sorted_data <- data[, c("timestamp", sorted_column_names), with = FALSE]
-
 group_size <- 5
 numeric_cols <- names(data)[sapply(data, is.numeric)]
 numeric_cols <- numeric_cols[2:length(numeric_cols)]
