@@ -464,4 +464,6 @@ YUNSA                0.314        -0.130        -0.168 -0.145  0.105 -0.178
 ZOREN  0.126  0.123               -0.292                              0.288 ...
 ```
 
-The first 6 components cover over 90% of the variance. During this part of the homework, I realized my knowledge about PCA is not enough to interpret.
+The first 6 components cover over 90% of the variance. At this part of the homework, I realized my knowledge about PCA is not enough to interpret.
+### Inference  with Google Trends
+
