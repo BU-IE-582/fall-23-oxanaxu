@@ -470,3 +470,6 @@ The first 6 components cover over 90% of the variance. At this part of the homew
 I chose stocks that show dramatic increase or decrease in the prices to search for Google Trend keywords. 
 ![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/c60c47af-309c-4152-b8b6-bc36905e1aeb)
 PGSUS, FROTO and TOASO's price started a rise at the beginning of 2017. Search results of all three stocks increased at late 2017 and early 2018. The same is true for KAREL, TUPRS, YUNSA and YATAS. This tells me that Google users' interest follows the increment with a several months of delay. When the graphs are observed from a closer look, it seems like the prices maintain an increase during the first half of the years and behave the opposite in the second halfs. 
+
+### Notes
+I have used chatGPT almost all the time I needed to use R for I have been away from the language and been overwhelmed by my thesis for a while.
