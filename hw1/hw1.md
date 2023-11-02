@@ -258,6 +258,7 @@ for (group in groups) {
 ![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/702dd3d0-306f-48af-b858-652dba868e8c)
 ![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/e0a82c63-c2ed-49c8-8b20-067f096fc0ee)
 Almost every stock price increased at the beginning of 2017 and they decreased during late 2018 with some exceptions like CCOLA. This can be related to some economic or political changes in the country. My guess would be beginning of the presidential system in Türkiye had a negative impact on the stocks.
+
 ### Moving Window Correlation
 When the correlation matrix is observed, I noticed that 70% of the values are positive. This shows us the size of the two groups, when the data is divided into two groups, in which the stock prices tend to behave in similar direction.
 ```
@@ -466,4 +467,6 @@ ZOREN  0.126  0.123               -0.292                              0.288 ...
 
 The first 6 components cover over 90% of the variance. At this part of the homework, I realized my knowledge about PCA is not enough to interpret.
 ### Inference  with Google Trends
-
+I chose stocks that show dramatic increase or decrease in the prices to search for Google Trend keywords. 
+![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/c60c47af-309c-4152-b8b6-bc36905e1aeb)
+PGSUS, FROTO and TOASO's price started a rise at the beginning of 2017. Search results of all three stocks increased at late 2017 and early 2018. The same is true for KAREL, TUPRS, YUNSA and YATAS. This tells me that Google users' interest follows the increment with a several months of delay. When the graphs are observed from a closer look, it seems like the prices maintain an increase during the first half of the years and behave the opposite in the second halfs. 
