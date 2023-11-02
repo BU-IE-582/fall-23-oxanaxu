@@ -257,7 +257,7 @@ for (group in groups) {
 ![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/04e3fa75-c2ce-49ee-b59c-23259b7d38db)
 ![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/702dd3d0-306f-48af-b858-652dba868e8c)
 ![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/e0a82c63-c2ed-49c8-8b20-067f096fc0ee)
-Almost every stock price increased at the beginning of 2017 and they decreased during of 2018 with some exceptions like CCOLA. This can be related to some economic or political changes in the country.
+Almost every stock price increased at the beginning of 2017 and they decreased during late 2018 with some exceptions like CCOLA. This can be related to some economic or political changes in the country. My guess would be beginning of the presidential system in Türkiye had a negative impact on the stocks.
 ### Moving Window Correlation
 When the correlation matrix is observed, I noticed that 70% of the values are positive. This shows us the size of the two groups, when the data is divided into two groups, in which the stock prices tend to behave in similar direction.
 ```
