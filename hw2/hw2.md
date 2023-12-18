@@ -199,10 +199,7 @@ selected_gbm=tolerance(gbm_fit$results, metric = "ROC", tol = 2, maximize = TRUE
 gbm_fit$results[selected_gbm,]
 ```
 I selected the best model with the best parameters as the selected gradient boosting method.
-<p>
-  In order to select the best approach for the model, I run the Random Forest again with mtry = 5.
-  </p>
-
+In order to select the best approach for the model, I run the Random Forest again with mtry = 5.
 ```
 data$diagnosis <- as.factor(data$diagnosis)
 
