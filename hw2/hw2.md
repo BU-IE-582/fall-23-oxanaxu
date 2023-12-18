@@ -283,8 +283,8 @@ Decision Tree seems to be the weakest model. The other three approaches are very
 
 ## 2nd and 3rd Datasets
 The 2nd and 3rd datasets are actually the same except their target features, which are performance of the students on mathematics and portuguese lessons. There are numeric, binary and nominal features.
-<p>
-# Attributes for both student-mat.csv (Math course) and student-por.csv (Portuguese language course) datasets:
+```
+Attributes for both student-mat.csv (Math course) and student-por.csv (Portuguese language course) datasets:
 1 school - student's school (binary: 'GP' - Gabriel Pereira or 'MS' - Mousinho da Silveira)
 2 sex - student's sex (binary: 'F' - female or 'M' - male)
 3 age - student's age (numeric: from 15 to 22)
@@ -316,7 +316,7 @@ The 2nd and 3rd datasets are actually the same except their target features, whi
 29 health - current health status (numeric: from 1 - very bad to 5 - very good)
 30 absences - number of school absences (numeric: from 0 to 93)
 
-# these grades are related with the course subject, Math or Portuguese:
+these grades are related with the course subject, Math or Portuguese:
 31 G1 - first period grade (numeric: from 0 to 20)
 31 G2 - second period grade (numeric: from 0 to 20)
-</p> 
+```
