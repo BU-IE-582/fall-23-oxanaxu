@@ -279,7 +279,7 @@ GBM 0.8571429 0.9047619 0.9523810 0.9458874 0.9540043    1    0
 Decision Tree seems to be the weakest model. The other three approaches are very close.
 
 ## 2nd and 3rd Datasets
-The 2nd and 3rd datasets are actually the same except their target features, which are performance of the students on mathematics and portuguese lessons respectively. There are numeric, binary and nominal features.
+The 2nd and 3rd datasets are actually the same except their target features, which are performance of the students on mathematics and portuguese lessons respectively. There are numeric, binary and nominal features. Link: https://archive.ics.uci.edu/dataset/320/student+performance
 ### Performance on Mathematics
 ```
 Attributes for both student-mat.csv (Math course) and student-por.csv (Portuguese language course) datasets:
