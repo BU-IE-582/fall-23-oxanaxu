@@ -110,7 +110,6 @@ mtry_values <- c(5, 10, 15, 20)
 rf_models <- list()
 
 for (mtry in mtry_values) {
-  set.seed(123)  
   rf_model <- train(
     x = data[, 2:ncol(data)],  
     y = data$diagnosis,
@@ -160,7 +159,6 @@ gbmGrid=expand.grid(interaction.depth = c( 3, 5),
                     n.trees = c(1:5)*100, 
                     shrinkage = c(0.05,0.1),
                     n.minobsinnode = 10)
-set.seed(1)                        
 gbm_fit=train(diagnosis ~ ., data = data, 
               method = "gbm", 
               trControl = fitControl, metric='ROC',
@@ -222,7 +220,6 @@ mtry_values <- c(5)
 rf_models <- list()
 
 for (mtry in mtry_values) {
-  set.seed(123)  
   rf_model <- train(
     x = data[, 2:ncol(data)],  
     y = data$diagnosis,
@@ -282,7 +279,8 @@ GBM 0.8571429 0.9047619 0.9523810 0.9458874 0.9540043    1    0
 Decision Tree seems to be the weakest model. The other three approaches are very close.
 
 ## 2nd and 3rd Datasets
-The 2nd and 3rd datasets are actually the same except their target features, which are performance of the students on mathematics and portuguese lessons. There are numeric, binary and nominal features.
+The 2nd and 3rd datasets are actually the same except their target features, which are performance of the students on mathematics and portuguese lessons respectively. There are numeric, binary and nominal features.
+### Performance on Mathematics
 ```
 Attributes for both student-mat.csv (Math course) and student-por.csv (Portuguese language course) datasets:
 1 school - student's school (binary: 'GP' - Gabriel Pereira or 'MS' - Mousinho da Silveira)
@@ -320,3 +318,470 @@ these grades are related with the course subject, Math or Portuguese:
 31 G1 - first period grade (numeric: from 0 to 20)
 31 G2 - second period grade (numeric: from 0 to 20)
 ```
+First i converted the binary features into 0s and 1s. Then I used dummy encoding for the nominal features. I also removed G1 and G2 features since they are highly correlated to the target feature. Since the target feature is numeric, i transformed it into a binary feature. If the value of an instance is higher then the median, it is in class "high", otherwise, "low".
+```
+data_path='C:/Users/ozanridvan.aksu/Desktop/582/Homework 2/student-mat.xlsx'
+feat_names_path='C:/Users/ozanridvan.aksu/Desktop/582/Homework 2/namesstudent.txt'
+data <- read_excel(data_path)
+feat_names=fread(feat_names_path,header=F)
+names(data)=feat_names$V1
+head(data)
+
+binary_columns <- c(1, 2, 4, 5, 6, 16, 17, 18, 19, 20, 21, 22, 23)
+
+for (col in names(data)[binary_columns]) {
+  unique_values <- unique(data[[col]])
+  if (length(unique_values) == 2) {
+    data[[col]] <- as.numeric(data[[col]] == unique_values[1])
+  }
+}
+nominal_columns <- c(9, 10, 11, 12)
+unique_counts <- sapply(data[, nominal_columns], function(x) length(unique(x)))
+dummy_columns <- lapply(data[, nominal_columns, drop = FALSE], function(x) {
+  if (length(unique(x)) > 1) {
+    model.matrix(~ x - 1, data = data.frame(x = x))
+  } else {
+    as.data.frame(x)
+  }
+})
+
+data <- cbind(data, do.call(cbind, dummy_columns))
+data <- data[, -nominal_columns]
+head(data)
+
+exclude_columns <- c(1, 2, 4, 5, 6, 12, 13, 14, 15, 16,17, 18, 19, 29, 30, 31, 32, 33, 34, 35, 36,
+                     37, 38, 39, 40, 41, 42, 43, 44, 45, 46)
+
+scale_columns <- setdiff(1:ncol(data), exclude_columns)
+
+scaled_data <- data
+scaled_data[, scale_columns] <- scale(data[, scale_columns])
+data <- data[, -c(27, 28)]
+scaled_data <- scaled_data[, -c(27, 28)]
+fitControl=trainControl(method = "repeatedcv",
+                        number = n_folds,
+                        repeats = n_repeats,
+                        classProbs=TRUE, summaryFunction=twoClassSummary)
+
+library(dplyr)
+data <- data %>%
+  select(G3, everything())
+scaled_data <- scaled_data %>%
+  select(G3, everything())
+require(data.table, quietly = TRUE)
+
+scaled_data$is_high <- ifelse(scaled_data$G3 > quantile(scaled_data$G3, 0.5), 'high', 'low')
+scaled_data <- scaled_data[, -c(1)]
+```
+### KNN
+The parameters that I tuned for each of the following approaches are the same with the first dataset.
+```
+knn_fit=train(is_high ~ ., data = scaled_data,  
+              method = "knn", 
+              trControl = fitControl, ,metric = "ROC",
+              tuneLength = 10)
+
+print(knn_fit)
+plot(knn_fit)
+```
+![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/ea95010d-e3a7-47ae-9d22-ecd84cc37959)
+5NN is the best model.
+### DT
+```
+minsplit_values <- c(10, 20, 30, 40, 50)
+minbucket_values <- c(5, 10, 15, 20, 25)
+
+tree_models <- list()
+roc_values_df <- data.frame(Model = character(), AUC = numeric())
+
+for (i in seq_along(minsplit_values)) {
+  minsplit_val <- minsplit_values[i]
+  minbucket_val <- minbucket_values[i]
+  
+  fit_rtree <- train(is_high ~ .,
+                     data = scaled_data,
+                     method = "rpart",
+                     metric = "ROC",
+                     trControl = trainControl(method = "repeatedcv",
+                                              number = 10,
+                                              repeats = 5,
+                                              classProbs = TRUE,
+                                              summaryFunction = twoClassSummary),
+                     tuneGrid = data.frame(cp = 0),
+                     control = rpart.control(cp = 0, minsplit = minsplit_val, minbucket = minbucket_val))
+  
+  tree_models[[i]] <- fit_rtree
+  
+  auc_value <- fit_rtree$results$ROC
+  
+  roc_values_df <- rbind(roc_values_df, data.frame(Model = paste("Model", i), AUC = auc_value))
+}
+
+print(roc_values_df)
+```
+
+```
+    Model       AUC
+1 Model 1 0.5898313
+2 Model 2 0.6251618
+3 Model 3 0.6211462
+4 Model 4 0.6315749
+5 Model 5 0.6360014
+```
+### RF
+```
+scaled_data$is_high <- as.factor(scaled_data$is_high)
+
+n_repeats <- 5
+n_folds <- 10
+
+fitControl <- trainControl(
+  method = "repeatedcv",
+  number = n_folds,
+  repeats = n_repeats,
+  classProbs = TRUE,
+  summaryFunction = twoClassSummary
+)
+
+num_trees <- 500  # Number of trees
+min_obs_leaf <- 5  # Minimal number of observations per tree leaf
+
+mtry_values <- c(5, 10, 15, 20)
+
+rf_models <- list()
+
+for (mtry in mtry_values) {
+  rf_model <- train(
+    x = scaled_data[, 1:ncol(data) - 1],  
+    y = scaled_data$is_high, 
+    method = "rf",
+    trControl = fitControl,
+    tuneGrid = data.frame(mtry = mtry),
+    ntree = num_trees,
+    nodesize = min_obs_leaf
+  )
+  rf_models[[as.character(mtry)]] <- rf_model
+}
+
+for (mtry in mtry_values) {
+  cat("Model with mtry =", mtry, "\n")
+  print(rf_models[[as.character(mtry)]])
+}
+```
+```
+Model with mtry = 5
+
+  ROC        Sens       Spec     
+  0.6887078  0.4182353  0.8191667
+
+Model with mtry = 10 
+
+  ROC        Sens       Spec     
+  0.6942766  0.4634559  0.7902899
+
+Model with mtry = 15 
+
+  ROC        Sens       Spec     
+  0.6839224  0.4678676  0.7802174
+
+Model with mtry = 20 
+
+  ROC        Sens     Spec     
+  0.6832418  0.48625  0.7653261
+```
+Since the model with mtry = 10 is the best, I will run it again for further analysis on every approach that I used.
+```
+mtry_values <- c(10)
+
+rf_models <- list()
+
+for (mtry in mtry_values) {
+  rf_model <- train(
+    x = scaled_data[, 1:ncol(data) - 1],  
+    y = scaled_data$is_high, 
+    method = "rf",
+    trControl = fitControl,
+    tuneGrid = data.frame(mtry = mtry),
+    ntree = num_trees,
+    nodesize = min_obs_leaf
+  )
+  rf_models[[as.character(mtry)]] <- rf_model
+}
+```
+### GBM
+```
+gbmGrid=expand.grid(interaction.depth = c( 3, 5), 
+                    n.trees = c(1:5)*100, 
+                    shrinkage = c(0.05,0.1),
+                    n.minobsinnode = 10)
+set.seed(1)                        
+gbm_fit=train(is_high ~ ., data = scaled_data, 
+              method = "gbm", 
+              trControl = fitControl, metric='ROC',
+              tuneGrid = gbmGrid,
+              verbose=F) 
+
+gbm_fit
+plot(gbm_fit)
+
+selected_gbm=tolerance(gbm_fit$results, metric = "ROC", tol = 2, maximize = TRUE)  
+gbm_fit$results[selected_gbm,]
+```
+![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/f6f88b5f-fb34-4a3a-a895-0869b0d2a540)
+The best parameters for shrinkage, depth and number of trees are 0.05, 3 and 10 respectively.
+```
+resamps <- resamples(list(
+                          knn = knn_fit,
+                          DT = fit_rtree,
+                          RF = rf_model,
+                          GBM = gbm_fit))
+summary(resamps)
+bwplot(resamps)
+```
+```
+summary.resamples(object = resamps)
+
+Models: knn, DT, RF, GBM 
+Number of resamples: 50 
+
+ROC 
+         Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
+knn 0.4442935 0.6216632 0.6794327 0.6683136 0.7180707 0.8369565    0
+DT  0.4619565 0.5741688 0.6426630 0.6360014 0.6897778 0.8242188    0
+RF  0.5217391 0.6511974 0.6903556 0.6879311 0.7428269 0.8363171    0
+GBM 0.4739583 0.6474035 0.6821784 0.6856283 0.7546755 0.8695652    0
+```
+![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/31b962e1-cb27-4230-8b1b-7623b8bf2f80)
+Random forest is the best approach.
+
+### Performance on Portuguese
+### KNN
+```
+data_path='C:/Users/ozanridvan.aksu/Desktop/582/Homework 2/student-por.xlsx'
+feat_names_path='C:/Users/ozanridvan.aksu/Desktop/582/Homework 2/namesstudent.txt'
+data <- read_excel(data_path)
+feat_names=fread(feat_names_path,header=F)
+names(data)=feat_names$V1
+head(data)
+
+binary_columns <- c(1, 2, 4, 5, 6, 16, 17, 18, 19, 20, 21, 22, 23)
+
+for (col in names(data)[binary_columns]) {
+  unique_values <- unique(data[[col]])
+  if (length(unique_values) == 2) {
+    data[[col]] <- as.numeric(data[[col]] == unique_values[1])
+  }
+}
+nominal_columns <- c(9, 10, 11, 12)
+unique_counts <- sapply(data[, nominal_columns], function(x) length(unique(x)))
+dummy_columns <- lapply(data[, nominal_columns, drop = FALSE], function(x) {
+  if (length(unique(x)) > 1) {
+    model.matrix(~ x - 1, data = data.frame(x = x))
+  } else {
+    as.data.frame(x)
+  }
+})
+
+data <- cbind(data, do.call(cbind, dummy_columns))
+data <- data[, -nominal_columns]
+head(data)
+
+exclude_columns <- c(1, 2, 4, 5, 6, 12, 13, 14, 15, 16,17, 18, 19, 29, 30, 31, 32, 33, 34, 35, 36,
+                     37, 38, 39, 40, 41, 42, 43, 44, 45, 46)
+
+scale_columns <- setdiff(1:ncol(data), exclude_columns)
+
+scaled_data <- data
+scaled_data[, scale_columns] <- scale(data[, scale_columns])
+data <- data[, -c(27, 28)]
+scaled_data <- scaled_data[, -c(27, 28)]
+fitControl=trainControl(method = "repeatedcv",
+                        number = n_folds,
+                        repeats = n_repeats,
+                        classProbs=TRUE, summaryFunction=twoClassSummary)
+
+data <- data %>%
+  select(G3, everything())
+scaled_data <- scaled_data %>%
+  select(G3, everything())
+
+scaled_data$is_high <- ifelse(scaled_data$G3 > quantile(scaled_data$G3, 0.5), 'high', 'low')
+scaled_data <- scaled_data[, -c(1)]
+
+set.seed(1)
+knn_fit=train(is_high ~ ., data = scaled_data,  
+              method = "knn", 
+              trControl = fitControl, ,metric = "ROC",
+              tuneLength = 10)
+
+print(knn_fit)
+plot(knn_fit)
+```
+![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/55aa7d15-4a94-4e36-b3bf-2bdb2a195e71)
+### DT
+```
+minsplit_values <- c(10, 20, 30, 40, 50)
+minbucket_values <- c(5, 10, 15, 20, 25)
+
+tree_models <- list()
+roc_values_df <- data.frame(Model = character(), AUC = numeric())
+
+for (i in seq_along(minsplit_values)) {
+  minsplit_val <- minsplit_values[i]
+  minbucket_val <- minbucket_values[i]
+  
+  fit_rtree <- train(is_high ~ .,
+                     data = scaled_data,
+                     method = "rpart",
+                     metric = "ROC",
+                     trControl = trainControl(method = "repeatedcv",
+                                              number = 10,
+                                              repeats = 5,
+                                              classProbs = TRUE,
+                                              summaryFunction = twoClassSummary),
+                     tuneGrid = data.frame(cp = 0),
+                     control = rpart.control(cp = 0, minsplit = minsplit_val, minbucket = minbucket_val))
+  
+  tree_models[[i]] <- fit_rtree
+  
+  auc_value <- fit_rtree$results$ROC
+  
+  roc_values_df <- rbind(roc_values_df, data.frame(Model = paste("Model", i), AUC = auc_value))
+}
+
+print(roc_values_df)
+```
+```
+    Model       AUC
+1 Model 1 0.7047959
+2 Model 2 0.7264140
+3 Model 3 0.7305166
+4 Model 4 0.7288442
+5 Model 5 0.7278111
+```
+#RF
+```
+scaled_data$is_high <- as.factor(scaled_data$is_high)
+
+n_repeats <- 5
+n_folds <- 10
+
+fitControl <- trainControl(
+  method = "repeatedcv",
+  number = n_folds,
+  repeats = n_repeats,
+  classProbs = TRUE,
+  summaryFunction = twoClassSummary
+)
+
+num_trees <- 500  # Number of trees
+min_obs_leaf <- 5  # Minimal number of observations per tree leaf
+
+mtry_values <- c(5, 10, 15, 20)
+
+rf_models <- list()
+
+for (mtry in mtry_values) {
+  rf_model <- train(
+    x = scaled_data[, 1:ncol(data) - 1],  
+    y = scaled_data$is_high, 
+    method = "rf",
+    trControl = fitControl,
+    tuneGrid = data.frame(mtry = mtry),
+    ntree = num_trees,
+    nodesize = min_obs_leaf
+  )
+  rf_models[[as.character(mtry)]] <- rf_model
+}
+
+for (mtry in mtry_values) {
+  cat("Model with mtry =", mtry, "\n")
+  print(rf_models[[as.character(mtry)]])
+}
+```
+```
+Model with mtry = 5 
+
+  ROC        Sens       Spec     
+  0.8001766  0.6387831  0.7644808
+
+Model with mtry = 10 
+
+  ROC        Sens       Spec    
+  0.8011812  0.6713228  0.759175
+
+Model with mtry = 15 
+
+  ROC        Sens       Spec     
+  0.7954997  0.6672751  0.7527454
+
+Model with mtry = 20 
+
+  ROC      Sens       Spec     
+  0.79731  0.6689947  0.7521906
+```
+Again, mtry = 10 is the best model.
+```
+mtry_values <- c(10)
+
+rf_models <- list()
+
+for (mtry in mtry_values) {
+  rf_model <- train(
+    x = scaled_data[, 1:ncol(data) - 1],  
+    y = scaled_data$is_high, 
+    method = "rf",
+    trControl = fitControl,
+    tuneGrid = data.frame(mtry = mtry),
+    ntree = num_trees,
+    nodesize = min_obs_leaf
+  )
+  rf_models[[as.character(mtry)]] <- rf_model
+}
+```
+### GBM
+```
+gbmGrid=expand.grid(interaction.depth = c( 3, 5), 
+                    n.trees = c(1:5)*100, 
+                    shrinkage = c(0.05,0.1),
+                    n.minobsinnode = 10)
+set.seed(1)                        
+gbm_fit=train(is_high ~ ., data = scaled_data, 
+              method = "gbm", 
+              trControl = fitControl, metric='ROC',
+              tuneGrid = gbmGrid,
+              verbose=F)
+
+
+gbm_fit
+plot(gbm_fit)
+selected_gbm=tolerance(gbm_fit$results, metric = "ROC", tol = 2, maximize = TRUE)  
+gbm_fit$results[selected_gbm,]
+```
+The best parameters for shrinkage, depth and number of trees are 0.05, 3 and 10 respectively.
+```
+resamps <- resamples(list(
+                          knn = knn_fit,
+                          DT = fit_rtree,
+                          RF = rf_model,
+                          GBM = gbm_fit))
+summary(resamps)
+bwplot(resamps)
+```
+```
+summary.resamples(object = resamps)
+
+Models: knn, DT, RF, GBM 
+Number of resamples: 50 
+
+ROC 
+         Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA's
+knn 0.6452703 0.7423986 0.7659266 0.7662866 0.7899373 0.8527992    0
+DT  0.6047297 0.6888674 0.7218200 0.7278111 0.7687017 0.8406955    0
+RF  0.7002002 0.7783140 0.8052479 0.8037333 0.8373105 0.9059059    0
+GBM 0.6756757 0.7760886 0.7867153 0.7963840 0.8269788 0.8928929    0
+```
+![image](https://github.com/BU-IE-582/fall-23-oxanaxu/assets/119375227/1c39cd67-2caf-4a68-9ea4-4f0b4b36cdb7)
+Random forest is again the best approach, which is no surprise since the only difference between 2nd and 3rd datasets are the target feature.
+## On Learners
+Gradient Boosting and Random Forest have the most execution time.
