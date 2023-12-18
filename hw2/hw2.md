@@ -201,6 +201,8 @@ gbm_fit$results[selected_gbm,]
 I selected the best model with the best parameters as the selected gradient boosting method.
 <p>
   In order to select the best approach for the model, I run the Random Forest again with mtry = 5.
+  </p>
+
 ```
 data$diagnosis <- as.factor(data$diagnosis)
 
@@ -249,7 +251,6 @@ resamps <- resamples(list(
 summary(resamps)
 bwplot(resamps)
 ```
-</p>
 The resutls are:
 ```
 Call:
